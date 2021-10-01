@@ -1,0 +1,55 @@
+{% load static %}
+
+<html>
+    <head>
+        <title>Chatroom</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
+        <link rel="stylesheet" href="{% static 'bootstrap-datetimepicker/css/bootstrap-datetimepicker.css' %}">
+        <link rel="icon" href="{% static 'images/favicon.png' %}">
+    </head>
+    <body>
+        <div class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+            <div class="page-header">
+                <h1><a href="{% url 'login'%}">Login Room</a></h1>
+            </div>
+            <div class="content">
+                {% block content %}
+                {% endblock %}
+            </div>
+            
+        </div>
+    </body>
+    <script src="{% static 'jquery-1.12.0/jquery-1.12.0.min.js' %}"></script>
+    <script src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'moment/moment.min.js' %}"></script>
+    <script src="{% static 'bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js' %}"></script>
+    <script>
+        var themes = {
+            "default": '{% static "bootstrap-3.3.7-dist/css/bootstrap.min.css" %}',
+            "cerulean" : '{% static "bootstrap-3.3.7-dist/css/bootstrap-cerulean.min.css" %}',
+            "cosmo" : '{% static "bootstrap-3.3.7-dist/css/bootstrap-cosmo.min.css" %}',
+            "cyborg" : '{% static "bootstrap-3.3.7-dist/css/bootstrap-cyborg.min.css" %}',
+            "darkly" : '{% static "bootstrap-3.3.7-dist/css/bootstrap-darkly.min.css" %}',
+            "flatly" : '{% static "bootstrap-3.3.7-dist/css/bootstrap-flatly.min.css" %}',
+            "journal" : '{% static "bootstrap-3.3.7-dist/css/bootstrap-journal.min.css" %}',
+            "lumen" : '{% static "bootstrap-3.3.7-dist/css/bootstrap-lumen.min.css" %}',
+            "paper" : '{% static "bootstrap-3.3.7-dist/css/bootstrap-paper.min.css" %}',
+            "readable" : '{% static "bootstrap-3.3.7-dist/css/bootstrap-readable.min.css" %}',
+            "sandstone" : '{% static "bootstrap-3.3.7-dist/css/bootstrap-sandstone.min.css" %}',
+            "simplex" : '{% static "bootstrap-3.3.7-dist/css/bootstrap-simplex.min.css" %}',
+            "slate" : '{% static "bootstrap-3.3.7-dist/css/bootstrap-slate.min.css" %}',
+            "spacelab" : '{% static "bootstrap-3.3.7-dist/css/bootstrap-spacelab.min.css" %}',
+            "superhero" : '{% static "bootstrap-3.3.7-dist/css/bootstrap-superhero.min.css" %}',
+            "united" : '{% static "bootstrap-3.3.7-dist/css/bootstrap-united.min.css" %}',
+            "yeti" : '{% static "bootstrap-3.3.7-dist/css/bootstrap-yeti.min.css" %}',
+        }
+        var themesheet = $('<link href="'+ themes['{{ theme }}'] + '" rel="stylesheet" />');
+        themesheet.appendTo('head');
+        var themeurl = themes['{{ theme }}']; 
+        themesheet.attr('href', themeurl);
+    </script>
+    {% block script %}
+    {% endblock %}
+</html>

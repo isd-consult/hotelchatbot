@@ -1,0 +1,33 @@
+
+h1, h2, h3, h4 {
+    text-align: center;
+}
+
+.top-menu{
+    font-size: 26px;
+}
+
+#chattingroom a{
+    text-align: center;
+}
+
+#mutenotice {
+    align-content: center;
+} 
+
+a:link {
+    text-decoration: none !important;
+}
+
+a:visited {
+    text-decoration: none !important;
+}
+
+a:hover {
+    text-decoration: none !important;
+}
+
+a:active {
+    text-decoration: none !important;
+}
+

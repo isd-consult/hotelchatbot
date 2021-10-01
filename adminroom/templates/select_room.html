@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="panel panel-info">
+        <div class="panel-body fixed-panel">
+            <div class="row">
+                <div class="col-xs-6">
+                    <h3>{{ user.username }}</h3>
+                </div>
+                <div class="col-xs-6">
+                    <h3 id='time-part'></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-10"><h4 style="text-align: right;">Control Panel</h4></div>
+        <div class="col-xs-2" style="margin-top: 10px;"><a href="{% url 'controlpanel' %}"><span class="glyphicon glyphicon-cog"></span></a></div>
+    </div>
+    <div class="panel panel-info">
+        <div id="room-list" class="panel-body fixed-panel row">
+            <div class="col-md-6 col-sm-12 col-xs-12 panel-body fixed-panel">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h4><span class="glyphicon glyphicon-globe"></span> Opened Chatting Room</h4>
+                    </div>
+                    <div class="panel-body fixed-panel">         
+                        <div id="chattingroom" class="list-group">
+                            {% if livechatrooms.count > 0 %}
+                                {% for room in livechatrooms %}
+                                    <a href="{% url 'selectedroom' pk=room.pk %}" class="list-group-item list-group-item-info"><span class="glyphicon glyphicon-eye-open"></span> {{ room.alias }}</a>
+                                {% endfor %}
+                            {% else %}
+                                <a href="{% url 'adminchatroom' %}" class="list-group-item list-group-item-info"><span class="glyphicon glyphicon-search"></span> there is no chatting room</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-12 col-xs-12 panel-body fixed-panel">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h4><span class="glyphicon glyphicon-globe"></span> Customers</h4>
+                    </div>
+                    <div class="panel-body fixed-panel">         
+                        <div id="chattingroom" class="list-group">
+                            {% if customers.count > 0 %}
+                                {% for customer in customers %}
+                                    {% if customer.is_authenticated %}
+                                        <a href="{% url 'offerchat' customer=customer.username %}" class="list-group-item list-group-item-info"><span class="glyphicon glyphicon-modal-window"></span> {{ customer.username }}</a>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <a href="{% url 'adminchatroom' %}" class="list-group-item list-group-item-info"><span class="glyphicon glyphicon-search"></span> there is no logined customer</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-info">
+        <div class="panel-body fixed-panel">
+            <form method="post" id="broadcastmessage-form">
+                <div class="col-md-12 col-sm-12 col-xs-12 panel-body fixed-panel">
+                    <div class="col-md-10 col-sm-12 col-xs-12" style="padding:5px;"><input type="text" class="form-control" placeholder="Enter Message" name="messageText" id="messageText" autofocus/></div>
+                    <div class="col-md-2 col-sm-12 col-xs-12" style="padding:5px;"><button class="btn btn-info btn-block" type="button" id="broadmessage-btn">Send <span class="glyphicon glyphicon-pencil"></span></button></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="panel panel-info">
+        <div id="user-info" class="panel-body fixed-panel row">
+            <div class="col-md-12 col-sm-12 col-xs-12 panel-body fixed-panel">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h4><span class="glyphicon glyphicon-globe"></span> Customers</h4>
+                    </div>
+                    <div class="panel-body fixed-panel">         
+                        <div id="customers" class="list-group">
+                            {% if customers.count > 0 %}
+                                {% for customer in customers %}
+                                    <a href="{% url 'customerinfo' pk=customer.pk %}" class="list-group-item list-group-item-info"><span class="glyphicon glyphicon-modal-window"></span> {{ customer.username }}</a>
+                                {% endfor %}
+                            {% else %}
+                                <a href="{% url 'adminchatroom' %}" class="list-group-item list-group-item-info"><span class="glyphicon glyphicon-search"></span> there is no customers</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script>
+        $(document).ready(function() { 
+            var interval = setInterval(function() {
+                var d = new Date();
+                var hours = d.getHours();
+                hours = hours > 9 ? hours: "0" + hours;
+                var minutes = d.getMinutes();
+                minutes = minutes > 9 ? minutes: "0" + minutes;
+                var seconds = d.getSeconds();
+                seconds = seconds > 9 ? seconds: "0" + seconds;
+                $('#time-part').html(hours + ":" + minutes + ":" + seconds);
+            }, 500);
+        });
+        var scrolling = false;
+        function getRooms(){
+            $.get('/service/livechatrooms/', function(livechatrooms){
+                $('#room-list').html(livechatrooms);
+            });
+        }
+        $(function(){
+            refreshTimer = setInterval(getRooms, 2500);
+        });
+        $('#broadmessage-btn').click(function(e) {
+            e.preventDefault();
+            var messageText=$('#messageText').val();
+            var req="message="+messageText;
+            $.ajax({
+                type: "POST",
+                url: "/service/broadcastmessage/",
+                headers: {'X-CSRFToken': '{{ csrf_token }}'},
+                data: req,
+                success: function(response) {
+                    alert(response.status);
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        });
+    </script>
+{% endblock %}

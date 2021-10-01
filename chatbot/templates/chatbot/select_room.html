@@ -1,0 +1,120 @@
+{% extends 'chatbot/base.html' %}
+
+{% block content %}
+    <div class="panel panel-info">
+        <div class="panel-body fixed-panel">
+            <div class="row">
+                <div class="col-xs-4">
+                    <h3>{{ user.username }}</h3>
+                </div>
+                <div class="col-xs-4">
+                    <h3>room: {{ user.roomnumber }}</h3>
+                </div>
+                <div class="col-xs-4">
+                    <h3 id='time-part'></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h2>@Your Service 24/7</h2>
+    <div class="row">
+        <div class="col-xs-8"><h4 style="text-align: right;">Mute from notices hotel</h4></div>
+        <div id="mutenotice" class="col-xs-4" style="margin-top: 10px;"><label class="switch"><input id="mutecheckbox" type="checkbox"><span class="slider round"></span></label></div>
+    </div>
+    
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h3><span class="glyphicon glyphicon-globe"></span> Direct Chat To Us! </h3>
+        </div>
+        <div class="panel-body fixed-panel">
+            <div class="row">
+                <div class="col-md-6 col-sm-12 col-xs-12" style="padding:5px;">
+                    <a href = "{% url 'frontdesk' %}" class="btn btn-primary btn-block">Front desk</a>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12" style="padding:5px;">
+                    <a href = "{% url 'concierge' %}" class="btn btn-primary btn-block">Concierge</a>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-6 col-sm-12 col-xs-12" style="padding:5px;">
+                    <a href = "{% url 'activitiesdesk' %}" class="btn btn-primary btn-block">Activities Desk</a>
+                </div>
+                <div class="col-md-6 col-sm-12 col-xs-12" style="padding:5px;">
+                    <a href = "{% url 'operator' %}" class="btn btn-primary btn-block">Operator</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="incomingchats">
+        {% if incomingchats.count > 0 %}
+        <div  class="panel panel-info">
+            <div class="panel-heading">
+                <h3><span class="glyphicon glyphicon-blackboard"></span> Incoming chat</h3>
+            </div>
+            <div class="panel-body fixed-panel">
+                {% for incomingchat in incomingchats %}
+                    <a href = "{% url 'selectincomingchat' roomname=incomingchat.name %}" class="btn btn-primary btn-block">{{ incomingchat.alias }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <div class="panel panel-info">
+        <div class="panel-body fixed-panel">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-6">
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-info">Hotel Info</a>
+                        <a href="#" class="list-group-item list-group-item-info">Restaurants</a>
+                        <a href="#" class="list-group-item list-group-item-info">Activities</a>
+                        <a href="#" class="list-group-item list-group-item-info">Spa</a>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-6">
+                    <div class="list-group">
+                        <a href="{% url 'reservations' %}" class="list-group-item list-group-item-info">Reservations</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script>
+        $(document).ready(function() {
+            var interval = setInterval(function() {
+                var d = new Date();
+                var hours = d.getHours();
+                hours = hours > 9 ? hours: "0" + hours;
+                var minutes = d.getMinutes();
+                minutes = minutes > 9 ? minutes: "0" + minutes;
+                var seconds = d.getSeconds();
+                seconds = seconds > 9 ? seconds: "0" + seconds;
+                $('#time-part').html(hours + ":" + minutes + ":" + seconds);
+            }, 100);
+            
+            $('#stop-interval').on('click', function() {
+                clearInterval(interval);
+            });
+        });
+        function getIncomingChat(){
+            if($('#mutecheckbox').is(':checked') == false){
+                $.get('/incomingchat/', function(incomingchat){
+                    $('#incomingchats').html(incomingchat);
+                });
+            }
+        }
+        $('#mutecheckbox').on('click', function() {
+            if($('#mutecheckbox').is(':checked')){
+                $('#incomingchats').hide();
+            }
+            else{
+                $('#incomingchats').show();
+            }
+        })
+        $(function(){
+            refreshTimer = setInterval(getIncomingChat, 2500);
+        });
+    </script>
+{% endblock %}
